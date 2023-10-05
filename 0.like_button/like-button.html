@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="root">
+        <button v-if="liked" @click="onclickButton2">좋아요 눌렀음</button>
+        <button v-else @click="onclickButton">Like</button>
+    </div>
+
+    <div id="app-2">
+        <span :title="message">
+            여기에 마우스를 잠시 올리면 바인딩 된 title을 볼 수 있습니다.
+        </span>
+    </div>
+
+    <div id="app-3">
+        <p v-if="seen">you can see me now!</p>
+    </div>
+
+    <div id="app-4">
+        <ol>
+            <li v-for="todo in todos">{{ todo.text }}</li>
+        </ol>
+    </div>
+
+    <div id="app-5">
+        <p>{{ message }}</p>
+        <button @click="reverseMessage">메시지 뒤집기</button>
+    </div>
+
+    <div id="app-6">
+        <p>{{ msg }}</p>
+        <input v-model="msg">
+    </div>
+</body>
+
+<script>
+    new Vue({
+        el: '#root',
+        data: {
+            liked: false,
+        },
+        methods: {
+            onclickButton () {
+                this.liked = true
+            },
+            onclickButton2 () {
+                this.liked = false
+            },
+
+        },
+    })
+
+    new Vue({
+        el: '#app-2',
+        data: {
+            message: '이 페이지는 ' + new Date() + ' 에 로드 되었습니다.'
+        }
+    })
+
+    new Vue({
+        el: '#app-3',
+        data: {
+            seen: true
+        }
+    })
+
+    new Vue({
+        el:'#app-4',
+        data: {
+            todos: [
+                { text: 'learn Vue!' },
+                { text: 'learn Javascript!' },
+                { text: 'learn HTML!' },
+            ]
+        }
+    })
+
+    new Vue({
+        el: '#app-5',
+        data: {
+            message: 'mastering Vue!'
+        },
+        methods: {
+            reverseMessage: function () {
+                this.message = this.message.split('').reverse().join('')
+            }
+        }
+    })
+
+    new Vue({
+        el: '#app-6',
+        data: {
+            msg: '조아써~'
+        }
+    })
+</script>
+
+</html>
