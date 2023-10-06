@@ -37,7 +37,7 @@ export default {
     methods: {
         onSubmitForm(e) {
             // 정답을 맞췄을 때
-            if (this.value === this.answer.join('')) {
+            if (this.value === this.answer.join('')) { // join('') -> 배열을 문자열로 변환, ''에 구분자를 넣거나 생략 가능
                 this.tries.push({
                     try: this.value,
                     result: '홈런',
