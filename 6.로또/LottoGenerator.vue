@@ -6,7 +6,7 @@
         </div>
         <div>보너스</div>
         <lotto-ball v-if="bonus"></lotto-ball>
-        <button v-if="redo">한 번 더!</button>
+        <button v-if="redo">한 번 더!</button> 
     </div>
 </template>
 
