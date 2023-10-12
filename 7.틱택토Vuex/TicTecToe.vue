@@ -1,33 +1,57 @@
 <template>
     <div>
         <div>{{ turn }}님의 턴입니다.</div>
-        <table-component :table-data="tableData" />
+        <table-component>
+            <tr v-for="(rowData, rowIndex) in tableData" :key="rowIndex">
+                <td @click="onCLickTd(rowIndex, cellIndex)" v-for="(cellData, cellIndex) in rowData" :key="cellIndex">{{ cellData }}</td>
+            </tr>
+        </table-component>
+        <!-- <table-component :table-data="tableData" /> -->
+        <!-- <table>
+            <tr v-for="(rowData, rowIndex) in tableData" :key="rowIndex">
+                <td @click="onCLickTd(rowIndex, cellIndex)" v-for="(cellData, cellIndex) in rowData" :key="cellIndex">{{ cellData }}</td>
+            </tr>
+        </table> -->
         <div v-if="winner">{{ winner }}님의 승리!</div>
     </div>
 </template>
 
 <script>
-import Vue from 'vue'
+import { mapState } from 'vuex';
+import store, { CHANGE_TURN, CLICK_CELL, NO_WINNER, RESET_GAME, SET_WINNER } from './store';
 import TableComponent from './TableComponent'
-import EventBus from './EventBus'
 
 export default {
+    store,
     components: {
         TableComponent
     },
     data () {
         return {
-            tableData: [
+/*             tableData: [
                 ['', '', ''],
                 ['', '', ''],
                 ['', '', ''],
-            ],
-            turn: 'O',
-            winner: ''
+            ], */
+            // data: 1,
         }
     },
     computed: {
-
+        ...mapState(['winner', 'turn', 'tableData']),
+        // ...mapState({
+        //     // 화살표 함수를 쓰면 this가 Vue 인스턴스를 가리키지 않는다.
+        //     // winner: state => state.winner,
+        //     winner (state) {
+        //         return state.winner + this.data
+        //     },
+        //     turnState: 'turn'
+        // })
+        // winner () {
+        //     return this.$store.state.winner
+        // },  
+        // turn () {
+        //     return this.$store.state.turn
+        // }
     },
     methods: {
         // vue는 배열의 변화를 감지하지 못한다.
@@ -39,11 +63,13 @@ export default {
             // this.tableData[0][1] = 'O';
 
             // 올바른 예시
-            Vue.set(this.tableData[1], 0, 'X');
             this.$set(this.tableData[1], 0, 'X'); // this.$set은 Vue.set의 별칭이다.
         },
-        onClickTd (rowIndex, cellIndex) {
-            this.$set(this.tableData[rowIndex], [cellIndex], this.turn);
+        onCLickTd (rowIndex, cellIndex) {
+            // 이미 클릭한 칸은 클릭하지 않도록
+            if (this.cellData) return;
+
+            this.$store.commit(CLICK_CELL, { row: rowIndex, cell: cellIndex })
 
             let win = false;
             // 가로줄 검사
@@ -72,13 +98,8 @@ export default {
 
             // 승리시 (턴 초기화, 테이블 초기화)
             if (win) {
-                this.winner = this.turn;
-                this.turn = 'O';
-                this.tableData = [
-                    ['', '', ''],
-                    ['', '', ''],
-                    ['', '', ''],
-                ];
+                this.$store.commit(SET_WINNER, this.turn)
+                this.$store.commit(RESET_GAME)
             } else {
                 // 졌을 때 (턴 변경)
                 let all = true; // all이 true면 무승부라는 뜻
@@ -91,22 +112,14 @@ export default {
                 });
                 // 무승부시
                 if (all) {
-                    this.winner = '';
-                    this.turn = 'O';
-                    this.tableData = [
-                        ['', '', ''],
-                        ['', '', ''],
-                        ['', '', ''],
-                    ];
+                    this.$store.commit(NO_WINNER)
+                    this.$store.commit(RESET_GAME)
                 } else {
                     // 게임이 안 끝났을 때
-                    this.turn = this.turn === 'O' ? 'X' : 'O';
+                    this.$store.commit(CHANGE_TURN)
                 }
             }
         }
-    },
-    created() {
-        EventBus.$on('clickTd', this.onClickTd)
     },
 }
 </script>
